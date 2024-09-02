@@ -25,7 +25,7 @@ public class Comment {
 
   private LocalDateTime publishedTimestamp;
 
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @ManyToOne
   private Article article;

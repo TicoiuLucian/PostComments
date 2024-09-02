@@ -1,45 +1,113 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Articles</title>
     <meta charset="UTF-8">
-    <title>All Robots</title>
-
-
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
-
-    <!-- Optional: jQuery and Popper.js for Bootstrap JS components -->
-    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
-
-    <!-- Bootstrap JS -->
-    <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.min.js}"></script>
-
-
-    <!-- Font Awesome CSS -->
-    <link rel="stylesheet" th:href="@{/webjars/font-awesome/6.5.2/css/all.min.css}"/>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+        .post-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .post-header img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .post-content {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        .comment-section {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .comment {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .comment img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .comment-body {
+            background-color: #f0f2f5;
+            border-radius: 18px;
+            padding: 10px;
+            max-width: 100%;
+        }
+        .comment-form {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<table>
-    <thead>
-    <tr>
-        <th> Title</th>
-        <th> Author</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:if="${articles.empty}">
-        <td colspan="2"> No Articles Available</td>
-    </tr>
-    <tr th:each="article : ${articles}">
-        <td><span th:text="${article.id}"> Id </span></td>
-        <td><span th:text="${article.title}"> Title </span></td>
-        <td><span th:text="${article.content}"> Content </span></td>
-        <td><span th:text="${article.author}"> Author </span></td>
-        <td><span th:text="${article.publishedTimestamp}"> Published date </span></td>
-    </tr>
-    </tbody>
-</table>
+
+<div class="container mt-5">
+    <div th:each="article : ${articles}" class="post-card">
+        <div class="post-header">
+            <img src="https://via.placeholder.com/40" alt="Author" width="40" height="40">
+            <div>
+                <h5 class="mb-0" th:text="${article.author}">Author Name</h5>
+                <small class="text-muted"
+                       th:text="${#temporals.format(article.publishedTimestamp, 'dd MMMM yyyy HH:mm')}">01 September
+                    2024 10:00</small>
+            </div>
+        </div>
+        <div class="post-content" th:text="${article.content}">
+            This is the content of the article.
+        </div>
+
+        <div class="comment-section">
+            <h6>Comments</h6>
+            <div th:if="${article.comments.isEmpty()}">
+                <p class="text-muted">No comments yet. Be the first to comment!</p>
+            </div>
+            <div th:each="comment : ${article.comments}" class="comment">
+                <img src="https://via.placeholder.com/32" alt="Commenter" width="32" height="32">
+                <div class="comment-body">
+                    <p class="mb-1" th:text="${comment.content}">This is a comment.</p>
+                    <small class="text-muted" th:text="${comment.author}">Commenter Name</small>
+                    <small class="text-muted float-end"
+                           th:text="${#temporals.format(comment.publishedTimestamp, 'dd MMMM yyyy HH:mm')}">01 September
+                        2024 10:15</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Form -->
+        <form class="comment-form" th:action="@{/add-comment/{articleId}(articleId=${article.id})}" method="post"
+              th:object="${emptyComment}">
+
+            <input type="hidden" th:field="*{article.id}"/>
+
+            <div class="input-group mb-3">
+                <input type="text" class="form-control col-4" placeholder="Content" aria-label="content"
+                       aria-describedby="span-id" th:field="*{content}" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Author" aria-label="author"
+                       aria-describedby="span-name" th:field="*{author}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS (Optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
